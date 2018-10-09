@@ -1,15 +1,30 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import network.celer.mobile.Client
 import network.celer.mobile.Mobile
+import org.json.JSONObject
 import java.io.File
+import com.android.volley.AuthFailureError
+import com.android.volley.VolleyError
+import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.Request.Method.POST
+import com.android.volley.toolbox.StringRequest
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
-    // TODO: Add your own keystore and its passwordStr here. Put your receiver addr
     private var keyStoreString = ""
     private var passwordStr = ""
     private var receiverAddr = ""
@@ -31,8 +46,11 @@ class MainActivity : AppCompatActivity() {
         keyStoreString = KeyStoreHelper().getKeyStoreString(this@MainActivity)
         passwordStr = KeyStoreHelper().getPassword()
 
+        var keyStoreJson = Gson().fromJson(keyStoreString, KeyStoreData::class.java)
+        var joinAddr = "0x" + keyStoreJson.address
 
         addLog("keyStoreString: ${keyStoreString}")
+        Log.d("MainActivity", keyStoreString)
         addLog("passwordStr: ${passwordStr}")
 
         val profileStr = getString(R.string.cprofile, datadir)
@@ -44,9 +62,11 @@ class MainActivity : AppCompatActivity() {
             addLog("Init Celer Client Error: ${e.localizedMessage}")
         }
 
+        getTokenFromFaucet(joinAddr)
+
         // Join Celer Network
         try {
-            client?.joinCeler("0x0", clientSideDepositAmount, serverSideDepositAmount)
+            client?.joinCeler(joinAddr, clientSideDepositAmount, serverSideDepositAmount)
             addLog("Balance: ${client?.getBalance(1)?.available}")
         } catch (e: Exception) {
             addLog("Join Celer Network Error: ${e.localizedMessage}")
@@ -82,6 +102,77 @@ class MainActivity : AppCompatActivity() {
 
     fun addLog(txt: String?) {
         logtext.append("\n" + txt)
+    }
+
+
+    fun getTokenFromFaucet(walletAddress: String) {
+//        val queue = Volley.newRequestQueue(this)
+//        val params = JSONObject()
+//        params.put("walletAddress", walletAddress)
+//        val request = JsonObjectRequest(
+//                Request.Method.POST, "https://faucet.metamask.io",
+//                params, Response.Listener {
+//
+//            logtext.append("\n getTokenSucceed: " + it.toString())
+//
+//
+//        }, Response.ErrorListener {
+//
+//            logtext.append("\n getToken Error: " + it.localizedMessage)
+//
+//        })
+//
+//        queue.add(request)
+
+
+//        val requestQueue = Volley.newRequestQueue(applicationContext)
+//        var httpurl = "https://faucet.metamask.io"
+//        val params = HashMap<String, String>()
+//        params["walletAddress"] = "walletAddress"
+//
+//        val jsonObject = JSONObject(params)
+//        val jsonRequest = object : JsonObjectRequest(Method.POST, httpurl, jsonObject,
+//                Response.Listener { response -> logtext.append("\n getTokenSucceed: " + response.toString()) },
+//                Response.ErrorListener { error -> logtext.append("\n getToken Error: " + error.localizedMessage) }) {
+//
+//            override fun getHeaders(): Map<String, String> {
+//                val headers = HashMap<String, String>()
+//                headers["Accept"] = "application/json"
+//                headers["Content-Type"] = "application/json; charset=UTF-8"
+//                return headers
+//            }
+//        }
+//        requestQueue.add(jsonRequest)
+
+
+
+
+//        var httpurl = "https://faucet.metamask.io"
+        var httpurl = "https://faucet.metamask.io"
+        val requestQueue = Volley.newRequestQueue(applicationContext)
+        val postsr = object : StringRequest(Request.Method.POST, httpurl, Response.Listener { s ->
+            logtext.append("\n getTokenSucceed: " + s.toString())
+            Toast.makeText(this@MainActivity, "volleyPostStringMonth请求成功：$s", Toast.LENGTH_SHORT).show()
+        }, Response.ErrorListener {
+
+            error -> logtext.append("\n getToken Error: " + error.localizedMessage)
+
+        }) {
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String> {
+                //创建一个集合，放的是keyvalue的key是参数名与value是参数值
+                val map = HashMap<String, String>()
+                map["body"] = walletAddress
+                return map
+            }
+
+
+        }
+        //设置请求标签用于加入全局队列后，方便找到
+        postsr.tag = "postsr"
+        //添加到全局的请求队列
+
+        requestQueue.add(postsr)
     }
 
 }
