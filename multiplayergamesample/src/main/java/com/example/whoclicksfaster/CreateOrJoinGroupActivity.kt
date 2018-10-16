@@ -32,20 +32,31 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
     }
 
 
-    fun createGame(v: View) {
+    fun createGroupClient(v: View) {
 
         var result = GameGroupAPIHelper.createNewGroupClient(keyStoreString, passwordStr, this)
 
         showTips("createNewGroupClient : $result")
 
-        if (GameGroupAPIHelper.gc == null || !result.contains("Success")) {
-            Toast.makeText(applicationContext, "GameGroupAPIHelper.createNewGroupClient failure. Try again later.", Toast.LENGTH_LONG).show()
-        } else {
-            var result = GameGroupAPIHelper.createGame(joinAddr)
+        if (result.contains("Success")) {
 
-            showTips("createGame : $result")
+            btnCreateGame.isEnabled = true
+            btnJoinGame.isEnabled = true
+            btnCreatGroupClient.visibility = View.INVISIBLE
+
+        } else {
+            Toast.makeText(applicationContext, "CreateGroupClient failure. Try again later.", Toast.LENGTH_LONG).show()
         }
 
+
+
+    }
+
+    fun createGame(v: View) {
+
+        var result = GameGroupAPIHelper.createGame(joinAddr)
+
+        showTips("createGame : $result")
 
     }
 

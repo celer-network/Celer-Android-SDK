@@ -25,8 +25,10 @@ class FastClickGameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fast_click_game)
 
 
-
         CelerClientAPIHelper.initSession(this, GameGroupAPIHelper.gresp, callback)
+
+        yourScoreBar.max = MAX
+        opponentScoreBar.max = MAX
     }
 
 
