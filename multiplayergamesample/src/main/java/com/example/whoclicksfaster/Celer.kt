@@ -3,6 +3,8 @@ package com.example.whoclicksfaster
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import network.celer.mobile.Client
 import network.celer.mobile.Mobile
 import java.math.BigInteger
@@ -73,37 +75,43 @@ class Celer private constructor(builder: Builder) {
         serverSideDepositAmount = builder.serverSideDepositAmount
 
 
-
-
-
     }
 
 
     fun createAndJoinCeler() {
-        if (celerClient == null) {
-            initCelerClient(keyStoreString!!, passwordStr!!, ospPlanUrl!!)
-        }
+
+        launch {
+            async {
+
+                if (celerClient == null) {
+                    initCelerClient(keyStoreString!!, passwordStr!!, ospPlanUrl!!)
+                }
 
 
-        if (celerClient != null) {
-            if (channelId == null || hasJoinedCeler() == BigInteger.ZERO) {
-                joinCeler(clientSideDepositAmount = clientSideDepositAmount, serverSideDepositAmount = serverSideDepositAmount)
-            } else {
-                listener!!.onReady(celerClient = celerClient!!)
+                if (celerClient != null) {
+                    if (channelId == null || hasJoinedCeler() == BigInteger.ZERO) {
+                        joinCeler(clientSideDepositAmount = clientSideDepositAmount, serverSideDepositAmount = serverSideDepositAmount)
+                    } else {
+                        listener!!.onReady(celerClient = celerClient!!)
+                    }
+                }
             }
         }
+
+
     }
 
 
-    fun hasJoinedCeler(): BigInteger {
+    private fun hasJoinedCeler(): BigInteger {
         val sendCapacity = celerClient!!.hasJoinedCeler(joinAddr)
         Log.d(TAG, "hasJoinedCeler: $sendCapacity")
         return sendCapacity.toBigInteger()
     }
 
 
-    fun initCelerClient(keyStoreString: String, passwordStr: String, profileStr: String) {
+    private fun initCelerClient(keyStoreString: String, passwordStr: String, profileStr: String) {
         // Init Celer Client
+
 
         var keyStoreJson = Gson().fromJson(keyStoreString, KeyStoreData::class.java)
 
@@ -115,20 +123,20 @@ class Celer private constructor(builder: Builder) {
         try {
             celerClient = Mobile.newClient(keyStoreString, passwordStr, profileStr)
 
-            if (channelId == null || hasJoinedCeler() == BigInteger.ZERO) {
-                joinCeler(clientSideDepositAmount = clientSideDepositAmount, serverSideDepositAmount = serverSideDepositAmount)
-            }
-
             Log.d(TAG, "Celer client created")
         } catch (e: Exception) {
             Log.d(TAG, "Celer client created Error: ${e.localizedMessage}")
             listener!!.onError(CLIENT_CREATE_ERROR, "Celer client created Error: ${e.localizedMessage}")
         }
+
+
     }
 
 
-    fun joinCeler(clientSideDepositAmount: String, serverSideDepositAmount: String) {
+    private fun joinCeler(clientSideDepositAmount: String, serverSideDepositAmount: String) {
         // Join Celer Network
+
+
         try {
             channelId = celerClient!!.joinCeler("0x0", clientSideDepositAmount, serverSideDepositAmount)
 
@@ -145,6 +153,7 @@ class Celer private constructor(builder: Builder) {
             listener!!.onError(JOIN_CELER_ERROR, "Join Celer Network Error: ${e.localizedMessage}")
 
         }
+
 
     }
 
