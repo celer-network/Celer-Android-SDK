@@ -30,6 +30,11 @@ class JoinCelerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_celer)
+
+
+//        var Celer = Celer.Builder().with(context = applicationContext).privateKey(privateKey = "").ospPlanUrl(ospPlanUrl = "").build()
+//
+//        Celer.settle(OnChainTimeOut.LONG)
     }
 
 
