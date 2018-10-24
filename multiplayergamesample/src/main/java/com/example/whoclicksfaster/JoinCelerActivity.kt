@@ -10,6 +10,7 @@ import com.example.payment.KeyStoreHelper
 import com.example.whoclicksfaster.CelerClientAPIHelper.joinAddr
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_join_celer.*
+import network.celer.mobile.Client
 import java.io.File
 
 class JoinCelerActivity : AppCompatActivity() {
@@ -26,6 +27,8 @@ class JoinCelerActivity : AppCompatActivity() {
 
     var handler: Handler = Handler()
 
+    lateinit var celer: Celer
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,9 @@ class JoinCelerActivity : AppCompatActivity() {
 //        var Celer = Celer.Builder().with(context = applicationContext).privateKey(privateKey = "").ospPlanUrl(ospPlanUrl = "").build()
 //
 //        Celer.settle(OnChainTimeOut.LONG)
+
+
+
     }
 
 
@@ -50,6 +56,12 @@ class JoinCelerActivity : AppCompatActivity() {
 
         Log.d(TAG, "keyStoreString" + keyStoreString)
         Log.d(TAG, "joinAddr: " + joinAddr)
+
+
+
+        val profileStr = getString(R.string.cprofile, datadir)
+        celer = Celer.Builder().keyStoreString(keyStoreString).passwordStr(passwordStr).ospPlanUrl(profileStr)
+                .listener(listener).build()
 
         showTips("createWallet Success : " + joinAddr)
 
@@ -109,6 +121,37 @@ class JoinCelerActivity : AppCompatActivity() {
         startActivity(intent)
 
     }
+
+    var listener: Celer.Listener = object : Celer.Listener {
+        override fun onError(code: Int, desc: String) {
+
+            showTips(desc)
+
+        }
+
+        override fun onReady(celerClient: Client) {
+
+            showTips("Join Success")
+
+        }
+
+        override fun onSettle() {
+        }
+
+        override fun onNewDeposit(amount: String) {
+        }
+
+        override fun onWithdraw(amount: String) {
+        }
+
+    }
+
+    fun createAndJoinCeler(v: View) {
+
+        celer.createAndJoinCeler()
+
+    }
+
 
 
     private fun showTips(str: String) {

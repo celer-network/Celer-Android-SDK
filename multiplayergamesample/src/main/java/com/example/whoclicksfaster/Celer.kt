@@ -10,20 +10,31 @@ import java.math.BigInteger
 class Celer private constructor(builder: Builder) {
     private val TAG = "Celer"
 
-    internal var context: Context? = null
+    private val CLIENT_CREATE_ERROR: Int = 0
+    private val JOIN_CELER_NO_OFFCHAIN_BALANCE_ERROR: Int = 1
+    private val JOIN_CELER_ERROR: Int = 2
 
-    internal var celerClient: Client? = null
+    private var context: Context? = null
 
-    internal var keyStoreString: String? = null
-    internal var passwordStr: String? = null
+    private var celerClient: Client? = null
 
-    internal var ospPlanUrl: String? = null
-    internal var timeout: Long? = null
+    private var keyStoreString: String? = null
+    private var passwordStr: String? = null
 
-    internal var listener: Listener? = null
+    private var ospPlanUrl: String? = null
+
+    private var clientSideDepositAmount = "500000000000000000" // 0.5 ETH
+    private var serverSideDepositAmount = "1500000000000000000" // 1.5 ETH
 
 
-    lateinit var joinAddr: String
+    private var timeout: Long? = null
+
+    private var listener: Listener? = null
+
+
+    private var joinAddr: String? = null
+
+    private var channelId: String? = null
 
 
     fun deposit(amount: String, timeout: Long) {}
@@ -58,9 +69,36 @@ class Celer private constructor(builder: Builder) {
 
         listener = builder.listener
 
+        clientSideDepositAmount = builder.clientSideDepositAmount
+        serverSideDepositAmount = builder.serverSideDepositAmount
 
-        initCelerClient(keyStoreString!!,passwordStr!!,ospPlanUrl!!)
 
+
+
+
+    }
+
+
+    fun createAndJoinCeler() {
+        if (celerClient == null) {
+            initCelerClient(keyStoreString!!, passwordStr!!, ospPlanUrl!!)
+        }
+
+
+        if (celerClient != null) {
+            if (channelId == null || hasJoinedCeler() == BigInteger.ZERO) {
+                joinCeler(clientSideDepositAmount = clientSideDepositAmount, serverSideDepositAmount = serverSideDepositAmount)
+            } else {
+                listener!!.onReady(celerClient = celerClient!!)
+            }
+        }
+    }
+
+
+    fun hasJoinedCeler(): BigInteger {
+        val sendCapacity = celerClient!!.hasJoinedCeler(joinAddr)
+        Log.d(TAG, "hasJoinedCeler: $sendCapacity")
+        return sendCapacity.toBigInteger()
     }
 
 
@@ -76,29 +114,35 @@ class Celer private constructor(builder: Builder) {
 
         try {
             celerClient = Mobile.newClient(keyStoreString, passwordStr, profileStr)
+
+            if (channelId == null || hasJoinedCeler() == BigInteger.ZERO) {
+                joinCeler(clientSideDepositAmount = clientSideDepositAmount, serverSideDepositAmount = serverSideDepositAmount)
+            }
+
             Log.d(TAG, "Celer client created")
         } catch (e: Exception) {
             Log.d(TAG, "Celer client created Error: ${e.localizedMessage}")
-            listener!!.onError(0, "Celer client created Error: ${e.localizedMessage}")
+            listener!!.onError(CLIENT_CREATE_ERROR, "Celer client created Error: ${e.localizedMessage}")
         }
     }
+
 
     fun joinCeler(clientSideDepositAmount: String, serverSideDepositAmount: String) {
         // Join Celer Network
         try {
-            celerClient?.joinCeler("0x0", clientSideDepositAmount, serverSideDepositAmount)
+            channelId = celerClient!!.joinCeler("0x0", clientSideDepositAmount, serverSideDepositAmount)
 
-            var offchainBalance = celerClient?.getBalance(1L)?.available ?: "0"
-            Log.d(TAG, "Balance: ${celerClient?.getBalance(1L)?.available}")
+            var offchainBalance = celerClient!!.getBalance(1L)?.available ?: "0"
+            Log.d(TAG, "Balance: ${celerClient!!.getBalance(1L)?.available}")
             if (offchainBalance.toBigInteger() > BigInteger.ZERO) {
                 listener!!.onReady(celerClient = celerClient!!)
             } else {
-                listener!!.onError(0, "no enough token")
+                listener!!.onError(JOIN_CELER_NO_OFFCHAIN_BALANCE_ERROR, "no enough token")
             }
 
         } catch (e: Exception) {
             Log.d(TAG, "Join Celer Network Error: ${e.localizedMessage}")
-            listener!!.onError(0, "Join Celer Network Error: ${e.localizedMessage}")
+            listener!!.onError(JOIN_CELER_ERROR, "Join Celer Network Error: ${e.localizedMessage}")
 
         }
 
@@ -115,6 +159,9 @@ class Celer private constructor(builder: Builder) {
         internal var timeout: Long? = null
 
         internal var listener: Listener? = null
+
+        var clientSideDepositAmount = "500000000000000000" // 0.5 ETH
+        var serverSideDepositAmount = "1500000000000000000" // 1.5 ETH
 
         fun with(context: Context): Builder {
             this.context = context
@@ -143,6 +190,16 @@ class Celer private constructor(builder: Builder) {
 
         fun listener(listener: Listener): Builder {
             this.listener = listener
+            return this
+        }
+
+        fun clientSideDepositAmount(clientSideDepositAmount: String): Builder {
+            this.clientSideDepositAmount = clientSideDepositAmount
+            return this
+        }
+
+        fun serverSideDepositAmount(serverSideDepositAmount: String): Builder {
+            this.serverSideDepositAmount = serverSideDepositAmount
             return this
         }
 
