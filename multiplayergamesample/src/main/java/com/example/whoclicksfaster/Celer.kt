@@ -6,8 +6,8 @@ import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
-import network.celer.mobile.Client
-import network.celer.mobile.Mobile
+import network.celer.celersdk.Celersdk
+import network.celer.celersdk.Client
 import java.math.BigInteger
 
 class Celer private constructor(builder: Builder) {
@@ -141,7 +141,7 @@ class Celer private constructor(builder: Builder) {
 
 
         try {
-            celerClient = Mobile.newClient(keyStoreString, passwordStr, profileStr)
+            celerClient = Celersdk.newClient(keyStoreString, passwordStr, profileStr)
 
             Log.d(TAG, "Celer client created")
         } catch (e: Exception) {

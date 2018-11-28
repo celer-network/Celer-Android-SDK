@@ -10,7 +10,7 @@ import com.example.payment.KeyStoreHelper
 import com.example.whoclicksfaster.CelerClientAPIHelper.joinAddr
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_join_celer.*
-import network.celer.mobile.Client
+import network.celer.celersdk.Client
 import java.io.File
 
 class JoinCelerActivity : AppCompatActivity() {

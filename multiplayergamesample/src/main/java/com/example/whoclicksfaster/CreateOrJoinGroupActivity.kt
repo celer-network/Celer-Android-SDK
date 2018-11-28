@@ -8,8 +8,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_create_or_join_group.*
-import network.celer.mobile.GroupCallback
-import network.celer.mobile.GroupResp
+import network.celer.appsdk.GroupCallback
+import network.celer.appsdk.GroupResp
 
 class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
 

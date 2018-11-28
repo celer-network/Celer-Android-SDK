@@ -1,7 +1,8 @@
 package com.example.whoclicksfaster
 
 import android.util.Log
-import network.celer.mobile.*
+import network.celer.appsdk.*
+import network.celer.celersdk.Celersdk
 
 object GameGroupAPIHelper {
 
@@ -12,7 +13,7 @@ object GameGroupAPIHelper {
 
     fun createNewGroupClient(keyStoreString: String, passwordStr: String, callback: GroupCallback): String {
         try {
-            gc = Mobile.newGroupClient("group-test-priv.celer.app:10001", keyStoreString, passwordStr, callback)
+            gc = Appsdk.newGroupClient("group-test-priv.celer.app:10001", keyStoreString, passwordStr, callback)
             Log.e("whoclicksfaster ", "Connected to Group Server")
             return "Connected to Group Server Success"
         } catch (e: Exception) {

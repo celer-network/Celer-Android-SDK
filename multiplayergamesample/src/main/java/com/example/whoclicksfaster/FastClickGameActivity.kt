@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
-import network.celer.mobile.CAppCallback
+import network.celer.celersdk.CAppCallback
 
 class FastClickGameActivity : AppCompatActivity() {
     private val TAG = "who clicks faster"

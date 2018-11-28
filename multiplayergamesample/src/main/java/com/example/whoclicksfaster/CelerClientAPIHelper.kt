@@ -3,7 +3,8 @@ package com.example.whoclicksfaster
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
-import network.celer.mobile.*
+import network.celer.appsdk.GroupResp
+import network.celer.celersdk.*
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.generated.Uint256
@@ -52,7 +53,7 @@ object CelerClientAPIHelper {
 
 
         try {
-            client = Mobile.newClient(keyStoreString, passwordStr, profileStr)
+            client = Celersdk.newClient(keyStoreString, passwordStr, profileStr)
             Log.d(TAG, "Celer client created")
             return "Celer client created"
         } catch (e: Exception) {

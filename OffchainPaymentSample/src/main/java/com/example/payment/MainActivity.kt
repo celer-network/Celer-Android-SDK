@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
-import network.celer.mobile.Client
-import network.celer.mobile.Mobile
+import network.celer.celersdk.Celersdk
+import network.celer.celersdk.Client
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         // Init Celer Client
         try {
-            client = Mobile.newClient(keyStoreString, passwordStr, profileStr)
+            client = Celersdk.newClient(keyStoreString, passwordStr, profileStr)
         } catch(e: Exception) {
             addLog("Init Celer Client Error: ${e.localizedMessage}")
         }
