@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.CountDownTimer
 import android.util.Log
 import com.google.gson.Gson
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import network.celer.celersdk.Celersdk
 import network.celer.celersdk.Client
 import java.math.BigInteger
