@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import network.celer.celersdk.Celersdk
-import network.celer.mobile.Client
+import network.celer.celersdk.Client
 import java.math.BigInteger
 import java.util.*
 
