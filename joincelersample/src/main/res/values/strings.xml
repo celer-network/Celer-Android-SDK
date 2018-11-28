@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">JoinCelerSample</string>
+
+
+    <string name="cprofile">{\"ETHInstance\": \"ws://osp1-test-priv.celer.app:8546\",
+        \"SvrRPC\": \"osp1-test-priv.celer.app:10000\",
+        \"StoreDir\": \"%1$s\",
+        \"SvrETHAddr\": \"5963e46cf9f9700e70d4d1bc09210711ab4a20b4\",
+        \"ChanAddr\": \"189908e83d9245d89f0859e8361342b634785956\",
+        \"ResolverAddr\": \"1e92cd8c8af5ab6cf5a93824e7f24532fccab5d8\",
+        \"DepositPoolAddr\": \"b9353a8413189e3c6c4fce8c48c9b4bd6e5be814\",
+        \"HTLRegistryAddr\": \"869ef00c827f91ca115bfe25427b75d970b8d95d\"}</string>
 </resources>

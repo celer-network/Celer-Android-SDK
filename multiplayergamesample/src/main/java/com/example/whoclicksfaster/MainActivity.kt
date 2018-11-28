@@ -11,9 +11,9 @@ import android.widget.Toast
 import com.example.payment.KeyStoreHelper
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
-import network.celer.mobile.CAppCallback
-import network.celer.mobile.GroupCallback
-import network.celer.mobile.GroupResp
+import network.celer.appsdk.GroupCallback
+import network.celer.appsdk.GroupResp
+import network.celer.celersdk.CAppCallback
 import java.io.File
 
 class MainActivity : AppCompatActivity(), GroupCallback {

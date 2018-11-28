@@ -34,4 +34,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+
+    implementation project(path: ':celer_sdk')
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    implementation 'com.android.volley:volley:1.1.1'
+
+    implementation 'com.google.code.gson:gson:2.8.1'
 }
