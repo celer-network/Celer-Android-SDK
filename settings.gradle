@@ -1,1 +1,1 @@
-include ':OffchainPaymentSample', ':goceler', ':multiplayergamesample'
+include ':OffchainPaymentSample', ':goceler', ':multiplayergamesample', ':celer_sdk'
