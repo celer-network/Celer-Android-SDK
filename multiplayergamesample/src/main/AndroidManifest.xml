@@ -18,7 +18,6 @@
         <activity android:name=".FastClickGameActivity"></activity>
         <activity
             android:name=".CreateOrJoinGroupActivity"
-            android:label="@string/title_activity_create_or_join_group"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".JoinCelerActivity">
             <intent-filter>

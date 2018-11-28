@@ -1,27 +1,27 @@
 <resources>
     <string name="app_name">Who Clicks Faster</string>
 
-    <string name="cprofile">{\"ETHInstance\": \"ws://osp1-test-priv.celer.app:8546\",
-        \"SvrRPC\": \"osp1-test-priv.celer.app:10000\",
-        \"StoreDir\": \"%1$s\",
-        \"SvrETHAddr\": \"5963e46cf9f9700e70d4d1bc09210711ab4a20b4\",
-        \"ChanAddr\": \"189908e83d9245d89f0859e8361342b634785956\",
-        \"ResolverAddr\": \"1e92cd8c8af5ab6cf5a93824e7f24532fccab5d8\",
-        \"DepositPoolAddr\": \"b9353a8413189e3c6c4fce8c48c9b4bd6e5be814\",
-        \"HTLRegistryAddr\": \"869ef00c827f91ca115bfe25427b75d970b8d95d\"}</string>
-    <string name="title_activity_create_or_join_group">CreateOrJoinGroupActivity</string>
+    <!--<string name="cprofile">{\"ETHInstance\": \"ws://osp1-test-priv.celer.app:8546\",-->
+        <!--\"SvrRPC\": \"osp1-test-priv.celer.app:10000\",-->
+        <!--\"StoreDir\": \"%1$s\",-->
+        <!--\"SvrETHAddr\": \"5963e46cf9f9700e70d4d1bc09210711ab4a20b4\",-->
+        <!--\"ChanAddr\": \"189908e83d9245d89f0859e8361342b634785956\",-->
+        <!--\"ResolverAddr\": \"1e92cd8c8af5ab6cf5a93824e7f24532fccab5d8\",-->
+        <!--\"DepositPoolAddr\": \"b9353a8413189e3c6c4fce8c48c9b4bd6e5be814\",-->
+        <!--\"HTLRegistryAddr\": \"869ef00c827f91ca115bfe25427b75d970b8d95d\"}</string>-->
+    <!--<string name="title_activity_create_or_join_group">CreateOrJoinGroupActivity</string>-->
 
-    <!--<string name="cprofile"> {-->
-    <!--"ETHInstance": "ws://34.219.139.189:8546",-->
-    <!--"SvrETHAddr": "c5b57cf06716827d5df7f1061042baf4a03cb69a",-->
-    <!--"ChanAddr": "4c27e52372b5e58ba0d4be64183ce2b6024562f9",-->
-    <!--"ResolverAddr": "f98ec2d46dcbe809d045613d2f05fd679e09489a",-->
-    <!--"DepositPoolAddr": "33b44845e9d2f05465afc387a00f4db7db1fad6c",-->
-    <!--"HTLRegistryAddr": "9911c1d4f9bf45fa515f22bf7c7090657265cba4",-->
-    <!--"SvrRPC": "osp1-prod-ropsten.celer.app:10000",-->
-    <!--"StoreDir": "",-->
-    <!--"WebPort": ""-->
-    <!--}</string>-->
+    <string name="cprofile"> {
+    "ETHInstance": "ws://34.219.139.189:8546",
+    "SvrETHAddr": "c5b57cf06716827d5df7f1061042baf4a03cb69a",
+    "ChanAddr": "4c27e52372b5e58ba0d4be64183ce2b6024562f9",
+    "ResolverAddr": "f98ec2d46dcbe809d045613d2f05fd679e09489a",
+    "DepositPoolAddr": "33b44845e9d2f05465afc387a00f4db7db1fad6c",
+    "HTLRegistryAddr": "9911c1d4f9bf45fa515f22bf7c7090657265cba4",
+    "SvrRPC": "osp1-prod-ropsten.celer.app:10000",
+    "StoreDir": "",
+    "WebPort": ""
+    }</string>
 
 
 </resources>

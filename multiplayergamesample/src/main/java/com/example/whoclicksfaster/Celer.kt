@@ -1,6 +1,7 @@
 package com.example.whoclicksfaster
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.experimental.async
@@ -15,6 +16,8 @@ class Celer private constructor(builder: Builder) {
     private val CLIENT_CREATE_ERROR: Int = 0
     private val JOIN_CELER_NO_OFFCHAIN_BALANCE_ERROR: Int = 1
     private val JOIN_CELER_ERROR: Int = 2
+    private val CLIENT_CREATE_AND_JOIN_TIMEOUT_ERROR: Int = 3
+
 
     private var context: Context? = null
 
@@ -29,7 +32,7 @@ class Celer private constructor(builder: Builder) {
     private var serverSideDepositAmount = "1500000000000000000" // 1.5 ETH
 
 
-    private var timeout: Long? = null
+    private var timeout: Long? = 1000 * 60 * 3
 
     private var listener: Listener? = null
 
@@ -37,6 +40,9 @@ class Celer private constructor(builder: Builder) {
     private var joinAddr: String? = null
 
     private var channelId: String? = null
+
+    private var countDownTimer: CountDownTimer? = null
+    private val timeCountInMilliSeconds: Long = 1000 * 60 * 1 // 6 minutes
 
 
     fun deposit(amount: String, timeout: Long) {}
@@ -82,6 +88,20 @@ class Celer private constructor(builder: Builder) {
 
         launch {
             async {
+
+
+                countDownTimer = object : CountDownTimer(timeout!!,
+                        500) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        Log.d(TAG, "millisUntilFinished: $millisUntilFinished")
+                    }
+
+                    override fun onFinish() {
+                        listener!!.onError(CLIENT_CREATE_AND_JOIN_TIMEOUT_ERROR, "Celer client created Error: Time Out!!!")
+                    }
+
+                }
+
 
                 if (celerClient == null) {
                     initCelerClient(keyStoreString!!, passwordStr!!, ospPlanUrl!!)
