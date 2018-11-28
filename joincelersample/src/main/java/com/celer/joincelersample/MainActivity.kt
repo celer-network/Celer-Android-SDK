@@ -124,6 +124,8 @@ class MainActivity : AppCompatActivity() {
             file.mkdir()
         }
         datadir = file.path
+
+        showTips("datadir：$datadir")
     }
 
     private fun showTips(str: String) {
