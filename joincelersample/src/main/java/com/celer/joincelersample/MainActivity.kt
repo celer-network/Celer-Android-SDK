@@ -3,6 +3,7 @@ package com.celer.joincelersample
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import com.celer.celersdk.Celer
 import com.celer.celersdk.KeyStoreData
@@ -26,15 +27,19 @@ class MainActivity : AppCompatActivity() {
 
     var profileStr = ""
 
-    var faucetURL = "http://54.188.217.246:3008/donate/"
+    var faucetURL = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        faucetURL = "http://54.188.217.246:3008/donate/"
         profileStr = getString(R.string.cprofile, datadir)
 
+
+//        faucetURL = "https://osp1-test-priv.celer.app/donate/"
+//        profileStr = getString(R.string.cprofile_osp1_test_priv)
 
     }
 
@@ -98,9 +103,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onReady(celerClient: Client) {
 
-//                cOSClient = celerClient
-
                 showTips("Celer Ready ")
+
+                button.text = "Reset"
             }
 
         }
@@ -122,7 +127,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showTips(str: String) {
-
+        Log.e(TAG, str)
         handler.post {
             tips.append("\n" + str)
         }
