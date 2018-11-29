@@ -34,17 +34,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
+    }
+
+    fun joinCeler(v: View) {
+
+        progressBar.visibility = View.VISIBLE
+
+        createWallet()
+
+
         faucetURL = "http://54.188.217.246:3008/donate/"
         profileStr = getString(R.string.cprofile, datadir)
 
 
 //        faucetURL = "https://osp1-test-priv.celer.app/donate/"
 //        profileStr = getString(R.string.cprofile_osp1_test_priv)
-
-    }
-
-    fun joinCeler(v: View) {
-        createWallet()
 
         getTokenFromFaucet()
 
@@ -78,6 +84,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure() {
                 showTips("getTokenFromFaucet error ")
+
+                handler.post {
+                    progressBar.visibility = View.GONE
+                }
             }
 
         })
@@ -99,13 +109,23 @@ class MainActivity : AppCompatActivity() {
 
                 showTips("Join Celer Error: $code -- $desc")
 
+                handler.post {
+                    progressBar.visibility = View.GONE
+                }
+
+
             }
 
             override fun onReady(celerClient: Client) {
 
+
                 showTips("Celer Ready ")
 
-                button.text = "Reset"
+                handler.post {
+                    button.text = "Reset"
+
+                    progressBar.visibility = View.GONE
+                }
             }
 
         }
