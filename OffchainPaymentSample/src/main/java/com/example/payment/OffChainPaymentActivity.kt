@@ -5,6 +5,7 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import com.example.payment.FaucetHelper.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.text.method.ScrollingMovementMethod
 
@@ -40,33 +41,58 @@ class OffChainPaymentActivity : AppCompatActivity() {
         //step 2: Get token from faucet
         getTokenFromFaucetButton?.setOnClickListener {
 
+            showLog("Getting some TESTNET token from faucet...")
 
-            /*FaucetHelper().getTokenFromPrivateTestNetFaucet(context = this,
-                    faucetURL = "http://54.188.217.246:3008/donate/",
+            val faucetType = FaucetType.RopstenTestNetETHFromMetaMask
+            //val faucetType = FaucetType.PrivateTestNetETH
+            //The private TESTNET should not be used by default unless you have problems using Ropsten TESTNET
+
+            FaucetHelper().getTokenFromFaucet(
+                    faucetType = faucetType,
                     walletAddress = KeyStoreHelper.getAddress(),
-                    faucetCallBack = object : FaucetHelper.FaucetCallBack {
-                        override fun onSuccess() {
-                            showLog("Step 2: getTokenFromFaucet success, wait for transaction to complete")
+                    faucetCallBack = object : FaucetCallBack {
+
+                        override fun onSuccess(response: String) {
+                            showLog("Step 2: getTokenFromFaucet success! " +
+                                    "\nTransaction info: " + response +
+                                    "\nPlease wait for transaction to complete. " +
+                                    "\nYou need to have enough balance before joining Celer. ")
+
+                            when (faucetType) {
+                                FaucetType.RopstenTestNetETHFromMetaMask -> {
+                                    showLog("Check your transaction status on https://ropsten.etherscan.io/address/$response")
+                                    showLog("Check your wallet balance on https://ropsten.etherscan.io/address/${KeyStoreHelper.getAddress()}")
+                                    showLog("If you do not have on-chain balance, do not try to join Celer. Please wait till you have some on-chain balance.")
+                                }
+
+                                FaucetType.PrivateTestNetETH -> {
+                                    showLog("As you are on private TESTNET, we do not currently support viewing on-chain transactions or on-chain balances. " +
+                                            "If you want to get the full support and be able to view on-chain transactions on Ropsten, " +
+                                            "\nplease use our standard Ropsten cNode profile and the MetaMask Ropsten faucet")
+                                }
+                            }
                         }
 
-                        override fun onFailure() {
-                            showLog("getTokenFromFaucet error")
-                        }
-                    })*/
+                        override fun onFailure(error: String) {
+                            showLog("getTokenFromFaucet error: $error")
 
+                            when (faucetType) {
+                                FaucetType.RopstenTestNetETHFromMetaMask -> {
+                                    showLog("MetaMask Ropsten ETH faucet failed. This instability is not due to Celer SDK. " +
+                                            "\nPlease try again or find another way to transfer some Ropsten ETH to this address: ${KeyStoreHelper.getAddress()}" )
+                                    showLog("If this problem happens a lot and you do not have a convenient way to get some Ropsten ETH, " +
+                                            "\n please consider using the private TESTNET profile described in CelerClientAPIHelper")
+                                }
 
-            FaucetHelper().getTokenFromRopstenTestNetFaucet(context = this,
-                    faucetURL = "https://faucet.metamask.io",
-                    walletAddress = KeyStoreHelper.getAddress(),
-                    faucetCallBack = object : FaucetHelper.FaucetCallBack {
-                        override fun onSuccess() {
-                            showLog("Step 2: getTokenFromFaucet success, wait for transaction to complete. \nYou need to have enough balance before joining Celer. \nIf you are using Ropsten, " +
-                                    "you can check status on https://ropsten.etherscan.io/address/${KeyStoreHelper.getAddress()}")
+                                FaucetType.PrivateTestNetETH -> {
+                                    showLog("As you are on private TESTNET, we do not currently support viewing on-chain transactions or on-chain balances. " +
+                                            "If you want to get the full support and be able to view on-chain transactions on EtherScan, " +
+                                            "\nplease use our standard Ropsten cNode profile and the MetaMask Ropsten faucet")
+                                }
+                            }
+
                         }
 
-                        override fun onFailure() {
-                            showLog("getTokenFromFaucet error")
-                        }
                     })
         }
 

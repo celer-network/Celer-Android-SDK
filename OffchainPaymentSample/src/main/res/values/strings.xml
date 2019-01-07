@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Celer Payment Sample</string>
+
     <string name="cprofile_private_testnet">{\"ETHInstance\": \"ws://osp1-test-priv.celer.app:8546\",
         \"SvrRPC\": \"osp1-test-priv.celer.app:10000\",
         \"StoreDir\": \"%1$s\",
@@ -9,14 +10,17 @@
         \"DepositPoolAddr\": \"b9353a8413189e3c6c4fce8c48c9b4bd6e5be814\",
         \"HTLRegistryAddr\": \"869ef00c827f91ca115bfe25427b75d970b8d95d\"}</string>
 
-    <string name="cprofile_ropsten">{\"ETHInstance\": \"wss://ropsten.infura.io/ws\",
-    \"SvrETHAddr\": \"0d23f4a223bdeb35ac94dc9fd8a55a8fbc457073\",
-    \"ChanAddr\": \"125d354e99e90fe0764992d1ae0c6146acf50795\",
-    \"ResolverAddr\": \"f44339a31f7b80db56151b75f26151c17f459a2a\",
-    \"DepositPoolAddr\": \"b255c4f6a8e2ea441f3eefd8370a42f998e00818\",
-    \"HTLRegistryAddr\": \"371ec109574ba8208a9d216e07d3a1f04caa054a\",
-    \"SvrRPC\": \"osp1-test-ropsten.celer.app:10000\",
-        \"StoreDir\": \"%1$s\",
-    \"NoBlockDelay\": true}</string>
+
+
+   <string name="cprofile_ropsten">{\"ETHInstance\": \"wss://ropsten.infura.io/ws\",
+        \"SvrETHAddr\": \"f805979adde8d63d08490c7c965ee5c1df0aaae2\",
+        \"ChanAddr\": \"011b1fa33797be5fcf7f7e6bf436cf99683c186d\",
+        \"ResolverAddr\": \"cf8938ae21a21a7ffb2d47a69742ef5ce7a669cc\",
+        \"DepositPoolAddr\": \"658333a4ea7dd461b56592ed62839afc18d54a42\",
+        \"HTLRegistryAddr\": \"a41bf533110e0b778f6757e04cf7c6d2a8e294b1\",
+        \"SvrRPC\": \"osp1-hack-ropsten.celer.app:10000\",
+            \"StoreDir\": \"%1$s\",
+        \"NoBlockDelay\": true}</string>
+
 
 </resources>

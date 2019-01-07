@@ -1,112 +1,78 @@
 package com.example.payment
 
-import android.content.Context
 import android.util.Log
-import com.android.volley.*
-import com.android.volley.toolbox.HttpHeaderParser
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import java.io.UnsupportedEncodingException
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
+import java.nio.charset.Charset
 
 class FaucetHelper {
 
+    enum class FaucetType { RopstenTestNetETHFromMetaMask, PrivateTestNetETH }
+
+
     interface FaucetCallBack {
 
-        fun onSuccess()
+        fun onSuccess(response: String)
 
-        fun onFailure()
+        fun onFailure(error: String)
 
     }
 
-    fun getTokenFromPrivateTestNetFaucet(context: Context, faucetURL: String, walletAddress: String, faucetCallBack: FaucetCallBack) {
+    fun getTokenFromFaucet(faucetType: FaucetType, walletAddress: String, faucetCallBack: FaucetCallBack) {
 
-        val requestQueue = Volley.newRequestQueue(context)
+        when (faucetType) {
 
-        val stringRequest = object : StringRequest(Request.Method.GET, "$faucetURL$walletAddress",
-                Response.Listener {
-
-                    response ->
-                    Log.i("VOLLEY", response)
-
-                    if (response == "200") {
-                        faucetCallBack.onSuccess()
-                    } else {
-                        faucetCallBack.onFailure()
-                    }
-                },
-                Response.ErrorListener {
-
-                    error ->
-                    Log.e("VOLLEY", error.toString())
-
-                    faucetCallBack.onFailure()
-                }) {
-            override fun getBodyContentType(): String {
-                return "application/json; charset=utf-8"
-            }
-
-            override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
-                var responseString = ""
-                if (response != null) {
-                    responseString = response.statusCode.toString()
-                    // can get more details such as response.headers
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response))
-            }
+            FaucetType.RopstenTestNetETHFromMetaMask ->
+                getTokenFromMetaMaskFaucet(walletAddress, faucetCallBack)
+            FaucetType.PrivateTestNetETH ->
+                getTokenFromPrivateTestNetFaucet(walletAddress, faucetCallBack)
         }
 
-        requestQueue.add(stringRequest)
     }
 
-    fun getTokenFromRopstenTestNetFaucet(context: Context, faucetURL: String, walletAddress: String, faucetCallBack: FaucetCallBack) {
 
-        val requestQueue = Volley.newRequestQueue(context)
+    private fun getTokenFromPrivateTestNetFaucet(walletAddress: String, faucetCallBack: FaucetCallBack) {
 
-        val stringRequest = object : StringRequest(Request.Method.POST, faucetURL,
-                Response.Listener {
-
-                    response ->
-                    Log.i("VOLLEY", response)
-
-                    if (response == "200") {
-                        faucetCallBack.onSuccess()
-                    } else {
-                        faucetCallBack.onFailure()
+        "https://osp1-test-priv.celer.app/donate/$walletAddress"
+                .httpGet()
+                .responseString { _, response, result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            Log.e("Private TESTNET Faucet", "Private TESTNET Faucet Failed. " +
+                                    "Please use the standard Ropsten cNode profile or contact developer@celer.network")
+                            val ex = result.getException()
+                            faucetCallBack.onFailure(ex.localizedMessage)
+                        }
+                        is Result.Success -> {
+                            val response = result.get()
+                            faucetCallBack.onSuccess(response)
+                        }
                     }
-                },
-                Response.ErrorListener {
-
-                    error ->
-                    Log.e("VOLLEY", error.toString())
-
-
-                    faucetCallBack.onFailure()
-                }) {
-            override fun getBodyContentType(): String {
-                return "application/json; charset=utf-8"
-            }
-
-            @Throws(AuthFailureError::class)
-            override fun getBody(): ByteArray? {
-                try {
-                    return walletAddress?.toByteArray(charset("utf-8"))
-                } catch (uee: UnsupportedEncodingException) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", walletAddress, "utf-8")
-                    return null
                 }
-
-            }
-
-            override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
-                var responseString = ""
-                if (response != null) {
-                    responseString = response.statusCode.toString()
-                    // can get more details such as response.headers
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response))
-            }
-        }
-
-        requestQueue.add(stringRequest)
     }
+
+
+    private fun getTokenFromMetaMaskFaucet(walletAddress: String, faucetCallBack: FaucetCallBack) {
+
+        "https://faucet.metamask.io"
+                .httpPost()
+                .body(walletAddress, Charset.defaultCharset())
+                .responseString { _, response, result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            Log.e("MetaMaskFaucet", "MetaMask Faucet Failed. " +
+                                    "Please use other kinds of faucet to transfer some on-chain balance ti this account.")
+                            val ex = result.getException()
+                            faucetCallBack.onFailure(ex.localizedMessage)
+                        }
+                        is Result.Success -> {
+                            val response = result.get()
+                            faucetCallBack.onSuccess(response)
+                        }
+                    }
+                }
+
+    }
+
 }
