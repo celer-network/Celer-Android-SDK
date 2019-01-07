@@ -62,7 +62,8 @@ class FaucetHelper {
                     when (result) {
                         is Result.Failure -> {
                             Log.e("MetaMaskFaucet", "MetaMask Faucet Failed. " +
-                                    "Please use other kinds of faucet to transfer some on-chain balance ti this account.")
+                                    "You can either try again, use another Ropsten ETH faucet, " +
+                                    "\nor use an wallet that already has some Rospten ETH to transfer some on-chain balance to this account: $walletAddress")
                             val ex = result.getException()
                             faucetCallBack.onFailure(ex.localizedMessage)
                         }
