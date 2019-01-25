@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.example.payment.KeyStoreHelper
-import com.example.whoclicksfaster.CelerClientAPIHelper.joinAddr
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_join_celer.*
 import java.io.File
@@ -41,12 +40,13 @@ class JoinCelerActivity : AppCompatActivity() {
         passwordStr = KeyStoreHelper().getPassword()
 
         var keyStoreJson = Gson().fromJson(keyStoreString, KeyStoreData::class.java)
-        joinAddr = "0x" + keyStoreJson.address
+
+        CelerClientAPIHelper.myAddress = "0x" + keyStoreJson.address
 
         Log.d(TAG, "keyStoreString$keyStoreString")
-        Log.d(TAG, "joinAddr: $joinAddr")
+        Log.d(TAG, "myAddress: ${CelerClientAPIHelper.myAddress}")
 
-        showTips("createWallet Success : $joinAddr")
+        showTips("createWallet Success : ${CelerClientAPIHelper.myAddress}")
 
     }
 
@@ -62,7 +62,7 @@ class JoinCelerActivity : AppCompatActivity() {
     fun getTokenFromFaucet(v: View) {
 
         // Get some token from faucet
-        FaucetHelper().getTokenFromPrivateNetFaucet(context = this, faucetURL = "http://54.188.217.246:3008/donate/", walletAddress = joinAddr, faucetCallBack = object : FaucetHelper.FaucetCallBack {
+        FaucetHelper().getTokenFromPrivateNetFaucet(context = this, faucetURL = "http://54.188.217.246:3008/donate/", walletAddress = CelerClientAPIHelper.myAddress!!, faucetCallBack = object : FaucetHelper.FaucetCallBack {
             override fun onSuccess() {
                 Log.d(TAG, "\n faucet success")
                 showTips("getTokenFromFaucet success,wait for transaction to complete")
@@ -100,7 +100,7 @@ class JoinCelerActivity : AppCompatActivity() {
         var intent = Intent(this, CreateOrJoinGroupActivity::class.java)
         intent.putExtra("keyStoreString", keyStoreString)
         intent.putExtra("passwordStr", passwordStr)
-        intent.putExtra("joinAddr", joinAddr)
+        intent.putExtra("myAddress", CelerClientAPIHelper.myAddress)
         startActivity(intent)
 
     }

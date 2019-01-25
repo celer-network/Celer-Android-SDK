@@ -1,33 +1,21 @@
 package com.example.whoclicksfaster
 
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import kotlinx.android.synthetic.main.activity_fast_click_game.*
 import network.celer.celersdk.CAppCallback
-import org.spongycastle.util.encoders.Hex
-import android.os.CountDownTimer
+import network.celer.celersdk.Celersdk
+import java.nio.charset.Charset
 
 
 class FastClickGameActivity : AppCompatActivity() {
     private val TAG = "who clicks faster"
 
-    val MAX = 50
-
+    val MAX = 100
     var myScore = 0
-
-    var myFinalScore = 0
-
     var opponentScore = 0
-
-    var opponentFinalScore = 0
-
-    var lock = false
-
-    var handler: Handler = Handler()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,122 +24,81 @@ class FastClickGameActivity : AppCompatActivity() {
         myScoreBar?.max = MAX
         opponentScoreBar?.max = MAX
 
-        CelerClientAPIHelper.initSession(this, GameGroupAPIHelper.groupResponse, callback)
-
-
-        object : CountDownTimer(6000, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                countdownTimer.text = "Time remaining: " + millisUntilFinished / 1000
+        Celersdk.onLog(883)
+        CelerClientAPIHelper.initSession(this, GameGroupAPIHelper.groupResponse, object : CAppCallback {
+            override fun onStatusChanged(status: Long) {
+                Log.d(TAG, "createNewCAppSession onStatusChanged : $status")
             }
 
-            override fun onFinish() {
-                countdownTimer.text = "Time is up!"
+            override fun onReceiveState(state: ByteArray?): Boolean {
 
-                if (!lock) {
-                    myFinalScore = myScore
-                    clickButton.text = "My Final Score: $myFinalScore"
-                    clickButton.isEnabled = false
-                    sendState()//send the final score
-                    lock = true
+                runOnUiThread {
+
+                    var stateString = String(state!!, Charset.defaultCharset())
+
+                    info?.text = "Received : $stateString"
+
+                    Log.d(TAG, "onReceiveState $stateString")
+                    Log.d(TAG, "CelerClientAPIHelper.myIndex : ${CelerClientAPIHelper.myIndex}")
+                    Log.d(TAG, "CelerClientAPIHelper.opponentIndex : ${CelerClientAPIHelper.opponentIndex}")
+                    Log.d(TAG, "Player 1 score: ${stateString.split(":")[0].toInt()}")
+                    Log.d(TAG, "Player 2 score : ${stateString.split(":")[1].toInt()}")
+
+                    if (CelerClientAPIHelper.opponentIndex == 1) {
+                        opponentScore = stateString.split(":")[0].toInt()
+                    } else {
+                        opponentScore = stateString.split(":")[1].toInt()
+                    }
+
+                    state?.let {
+                        opponentScoreBar.progress = opponentScore
+                        opponentScoreText.text = "Opponent score: $opponentScore"
+                        myScoreBar.progress = myScore
+                        myScoreText.text = "My score: $myScore"
+                    }
+
+                    Log.d(TAG, "opponent score : $opponentScore")
+
                 }
+                return true
             }
-        }.start()
+        })
+        title = "Me: " + CelerClientAPIHelper.myAddress
 
     }
 
 
     private fun sendState() {
 
-        var state = ByteArray(4)
+        Log.d(TAG, "my score : $myScore")
+        Log.d(TAG, "opponent score : $opponentScore")
 
-        if (CelerClientAPIHelper.myIndex == 1) {
-            state[0] = myScore.toByte()
-            state[1] = opponentScore.toByte()
 
-            state[2] = myFinalScore.toByte()
-            state[3] = opponentFinalScore.toByte()
+        var stateString = if (CelerClientAPIHelper.myIndex == 1) {
+
+            myScore.toString() + ":" + opponentScore.toString()
 
         } else {
-            state[0] = opponentScore.toByte()
-            state[1] = myScore.toByte()
-
-            state[2] = opponentFinalScore.toByte()
-            state[3] = myFinalScore.toByte()
+            opponentScore.toString() + ":" + myScore.toString()
         }
 
-        CelerClientAPIHelper.sendState(state)
+        CelerClientAPIHelper.sendState(stateString.toByteArray())
+
+        info?.text = "Sent : $stateString"
+
     }
 
 
     fun clickMe(v: View) {
         myScore++
-
-       // sendState()
-
-        handler.post {
+        runOnUiThread {
             clickButton.text = myScore.toString()
             myScoreBar.progress = myScore
             myScoreText.text = "My score: $myScore"
-
-
+            sendState()
         }
 
     }
 
-    private var callback = object : CAppCallback {
-        override fun onStatusChanged(status: Long) {
-            Log.d(TAG, "createNewCAppSession onStatusChanged : $status")
-        }
 
-        override fun onReceiveState(state: ByteArray?): Boolean {
-            Log.d(TAG, "createNewCAppSession onReceiveState : ${Hex.toHexString(state)}")
-
-            Log.d(TAG, "CelerClientAPIHelper.myIndex : ${CelerClientAPIHelper.myIndex}")
-            Log.d(TAG, "CelerClientAPIHelper.opponentIndex : ${CelerClientAPIHelper.opponentIndex}")
-            Log.d(TAG, "Player 1 score: ${state!![0].toInt()}")
-            Log.d(TAG, "Player 2 score : ${state!![1].toInt()}")
-
-            if (CelerClientAPIHelper.myIndex == 1) {
-                opponentScore = state!![1].toInt()
-                opponentFinalScore = state!![3].toInt()
-            } else {
-                opponentScore = state!![0].toInt()
-                opponentFinalScore = state!![2].toInt()
-            }
-
-            handler.post {
-
-                state?.let {
-                    if (!lock) {
-                        opponentScoreBar.progress = opponentScore
-                        opponentScoreText.text = "Opponent score: $opponentScore"
-                    }
-
-
-                }
-
-
-                Log.d(TAG, "opponent score : $opponentScore")
-
-                if (myFinalScore != 0 && opponentFinalScore != 0) {
-
-                    Log.d(TAG, "opponent final score : $opponentFinalScore")
-
-                    Log.d(TAG, "my final score : $opponentFinalScore")
-
-
-                    clickButton.text = when {
-                        myFinalScore > opponentFinalScore -> "YOU WIN! "
-                        myFinalScore < opponentFinalScore -> "YOU LOST! "
-                        else -> "DRAW GAME!"
-                    }
-
-                }
-
-
-            }
-            return true
-        }
-    }
 }
