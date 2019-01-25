@@ -77,9 +77,11 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
 
 
     fun joinGame(v: View) {
+        var result = GameGroupAPIHelper.createNewGroupClient(keyStoreString, passwordStr, this)
+
         var code = etJoinCode.text.toString().toLong()
         var stake = "10"
-        var result = GameGroupAPIHelper.joinGame(joinAddr, code, stake)
+        GameGroupAPIHelper.joinGame(joinAddr, code, stake)
         showTips("joining game")
     }
 
