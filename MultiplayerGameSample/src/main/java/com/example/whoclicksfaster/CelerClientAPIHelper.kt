@@ -17,11 +17,9 @@ object CelerClientAPIHelper {
     private val TAG = "who clicks faster"
     private var client: Client? = null
 
-    lateinit var joinAddr: String
-
     var opponentIndex = -1
     var myIndex = -1
-    private var myAddress: String? = null
+    var myAddress: String? = null
     private var opponentAddress: String? = null
 
     var sessionId: String? = null
@@ -64,13 +62,11 @@ object CelerClientAPIHelper {
 
                 if (playerAddresses.size == 2) {
 
-                    if (playerAddresses[0].toLowerCase() == joinAddr!!.toLowerCase()) {
-                        myAddress = playerAddresses[0]
+                    if (playerAddresses[0].toLowerCase() == myAddress!!.toLowerCase()) {
                         opponentAddress = playerAddresses[1]
                         myIndex = 1
                         opponentIndex = 2
                     } else {
-                        myAddress = playerAddresses[1]
                         opponentAddress = playerAddresses[0]
                         opponentIndex = 1
                         myIndex = 2

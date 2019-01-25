@@ -22,10 +22,10 @@ object GameGroupAPIHelper {
     }
 
 
-    fun createGame(joinAddr: String): String {
-        leave(joinAddr)
+    fun createGame(myAddress: String): String {
+        leave(myAddress)
         var group = Group()
-        group.myId = joinAddr
+        group.myId = myAddress
         group.size = 2
         group.stake = "1000000000000000"
         Log.d(TAG, "Create: " + group.toString())
@@ -39,10 +39,10 @@ object GameGroupAPIHelper {
     }
 
 
-    fun joinGame(joinAddr: String, code: Long, stake:String) {
-        leave(joinAddr)
+    fun joinGame(myAddress: String, code: Long, stake:String) {
+        leave(myAddress)
         var group = Group()
-        group.myId = joinAddr
+        group.myId = myAddress
         group.code = code
         group.stake = stake
 
@@ -54,11 +54,11 @@ object GameGroupAPIHelper {
     }
 
 
-    fun leave(joinAddr: String) {
+    fun leave(myAddress: String) {
         groupClient?.let {
             Log.d(TAG, "leave previous group")
             var group = Group()
-            group.myId = joinAddr
+            group.myId = myAddress
             it.leave(group)
         }
     }

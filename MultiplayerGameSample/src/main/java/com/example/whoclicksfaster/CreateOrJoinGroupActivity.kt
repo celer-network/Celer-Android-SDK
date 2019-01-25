@@ -17,7 +17,6 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
 
     private var keyStoreString = ""
     private var passwordStr = ""
-    private var joinAddr = ""
 
     var handler: Handler = Handler()
 
@@ -28,7 +27,6 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
 
         keyStoreString = intent.getStringExtra("keyStoreString")
         passwordStr = intent.getStringExtra("passwordStr")
-        joinAddr = intent.getStringExtra("joinAddr")
     }
 
 
@@ -41,7 +39,7 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
         if (GameGroupAPIHelper.groupClient == null || !result.contains("Success")) {
             Toast.makeText(applicationContext, "GameGroupAPIHelper.createNewGroupClient failure. Try again later.", Toast.LENGTH_LONG).show()
         } else {
-            var result = GameGroupAPIHelper.createGame(joinAddr)
+            var result = GameGroupAPIHelper.createGame(CelerClientAPIHelper.myAddress!!)
 
             showTips("createGame : $result")
         }
@@ -81,7 +79,7 @@ class CreateOrJoinGroupActivity : AppCompatActivity(), GroupCallback {
 
         var code = etJoinCode.text.toString().toLong()
         var stake = "10"
-        GameGroupAPIHelper.joinGame(joinAddr, code, stake)
+        GameGroupAPIHelper.joinGame(CelerClientAPIHelper.myAddress!!, code, stake)
         showTips("joining game")
     }
 
