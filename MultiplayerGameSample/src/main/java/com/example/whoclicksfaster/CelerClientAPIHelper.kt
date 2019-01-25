@@ -108,7 +108,7 @@ object CelerClientAPIHelper {
                             Uint8(3)))
 
                     try {
-                        sessionId = client?.newCAppSession(cApp, constructor, gresp.round.id)
+                        sessionId = client?.newCAppSession(cApp, "", gresp.round.id)
                     } catch (e: Exception) {
                         Log.e(TAG, "newCAppSession Error: ${e.localizedMessage}")
 
