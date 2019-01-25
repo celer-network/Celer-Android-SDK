@@ -18,16 +18,11 @@ class FastClickGameActivity : AppCompatActivity() {
 
     var myScore = 0
 
-    var myFinalScore = 0
+    //var myFinalScore = 0
 
     var opponentScore = 0
 
-    var opponentFinalScore = 0
-
-    var lock = false
-
-    var handler: Handler = Handler()
-
+    //var opponentFinalScore = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,45 +34,26 @@ class FastClickGameActivity : AppCompatActivity() {
         CelerClientAPIHelper.initSession(this, GameGroupAPIHelper.groupResponse, callback)
 
 
-        object : CountDownTimer(6000, 1000) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                countdownTimer.text = "Time remaining: " + millisUntilFinished / 1000
-            }
-
-            override fun onFinish() {
-                countdownTimer.text = "Time is up!"
-
-                if (!lock) {
-                    myFinalScore = myScore
-                    clickButton.text = "My Final Score: $myFinalScore"
-                    clickButton.isEnabled = false
-                    sendState()//send the final score
-                    lock = true
-                }
-            }
-        }.start()
-
     }
 
 
     private fun sendState() {
 
-        var state = ByteArray(4)
+        var state = ByteArray(2)
 
         if (CelerClientAPIHelper.myIndex == 1) {
             state[0] = myScore.toByte()
             state[1] = opponentScore.toByte()
 
-            state[2] = myFinalScore.toByte()
-            state[3] = opponentFinalScore.toByte()
+            //state[2] = myFinalScore.toByte()
+            //state[3] = opponentFinalScore.toByte()
 
         } else {
             state[0] = opponentScore.toByte()
             state[1] = myScore.toByte()
 
-            state[2] = opponentFinalScore.toByte()
-            state[3] = myFinalScore.toByte()
+            //state[2] = opponentFinalScore.toByte()
+            //state[3] = myFinalScore.toByte()
         }
 
         CelerClientAPIHelper.sendState(state)
@@ -87,15 +63,13 @@ class FastClickGameActivity : AppCompatActivity() {
     fun clickMe(v: View) {
         myScore++
 
-       // sendState()
+        sendState()
 
-        handler.post {
+        /*handler.post {
             clickButton.text = myScore.toString()
             myScoreBar.progress = myScore
             myScoreText.text = "My score: $myScore"
-
-
-        }
+        }*/
 
     }
 
@@ -112,45 +86,24 @@ class FastClickGameActivity : AppCompatActivity() {
             Log.d(TAG, "Player 1 score: ${state!![0].toInt()}")
             Log.d(TAG, "Player 2 score : ${state!![1].toInt()}")
 
-            if (CelerClientAPIHelper.myIndex == 1) {
-                opponentScore = state!![1].toInt()
-                opponentFinalScore = state!![3].toInt()
-            } else {
+            if (CelerClientAPIHelper.opponentIndex == 1) {
+                myScore = state!![1].toInt()
                 opponentScore = state!![0].toInt()
-                opponentFinalScore = state!![2].toInt()
+            } else {
+                myScore = state!![0].toInt()
+                opponentScore = state!![1].toInt()
             }
 
-            handler.post {
 
                 state?.let {
-                    if (!lock) {
-                        opponentScoreBar.progress = opponentScore
-                        opponentScoreText.text = "Opponent score: $opponentScore"
-                    }
-
-
+                    opponentScoreBar.progress = opponentScore
+                    opponentScoreText.text = "Opponent score: $opponentScore"
+                    myScoreBar.progress = myScore
+                    myScoreText.text = "My score: $myScore"
                 }
-
 
                 Log.d(TAG, "opponent score : $opponentScore")
 
-                if (myFinalScore != 0 && opponentFinalScore != 0) {
-
-                    Log.d(TAG, "opponent final score : $opponentFinalScore")
-
-                    Log.d(TAG, "my final score : $opponentFinalScore")
-
-
-                    clickButton.text = when {
-                        myFinalScore > opponentFinalScore -> "YOU WIN! "
-                        myFinalScore < opponentFinalScore -> "YOU LOST! "
-                        else -> "DRAW GAME!"
-                    }
-
-                }
-
-
-            }
             return true
         }
     }
